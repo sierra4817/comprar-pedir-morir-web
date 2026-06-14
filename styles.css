@@ -1393,6 +1393,57 @@ body {
 .ios-modal-steps b {
     color: var(--text-primary);
 }
-<a href="https://payhip.com/b/G7ath" class="payhip-buy-button btn-premium">
-    Comprar Libro Completo
-</a>
+
+/* Password Screen Purchase Flow Options */
+.password-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #6e6e73;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.password-divider::before,
+.password-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.password-divider:not(:empty)::before {
+    margin-right: .75em;
+}
+
+.password-divider:not(:empty)::after {
+    margin-left: .75em;
+}
+
+.password-buy-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid rgba(191, 149, 63, 0.4);
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    cursor: pointer;
+    color: #bf953f;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.password-buy-btn:hover {
+    background: rgba(191, 149, 63, 0.08);
+    border-color: #bf953f;
+    color: #fcf6ba;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(191, 149, 63, 0.15);
+}
+
