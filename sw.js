@@ -1,4 +1,4 @@
-const CACHE_NAME = 'comprar-pedir-morir-reader-v1';
+const CACHE_NAME = 'comprar-pedir-morir-reader-v3';
 const ASSETS = [
   './app.html',
   './styles.css',
@@ -12,6 +12,20 @@ self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
+    })
+  );
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
     })
   );
 });

@@ -229,11 +229,25 @@
     </div>
 </div>
 <script>
+// Utilizar el safeStorage global si está disponible, o un fallback local si no lo está.
+  const storage = (typeof safeStorage !== 'undefined') ? safeStorage : {
+      getItem(key) {
+          try { return localStorage.getItem(key); } catch (e) { return this._fallback[key] || null; }
+      },
+      setItem(key, value) {
+          try { localStorage.setItem(key, value); } catch (e) { this._fallback[key] = String(value); }
+      },
+      removeItem(key) {
+          try { localStorage.removeItem(key); } catch (e) { delete this._fallback[key]; }
+      },
+      _fallback: {}
+  };
+
   const CORRECT_PASSWORD = "VIP1PERCENT";
 
   function checkAccess() {
       const screen = document.getElementById('password-screen');
-      if (localStorage.getItem('lector_authorized') === 'true') {
+      if (storage.getItem('lector_authorized') === 'true') {
           screen.style.display = 'none';
           return;
       }
@@ -245,7 +259,7 @@
       function verify() {
           const entered = passwordInput.value.trim().toUpperCase();
           if (entered === CORRECT_PASSWORD) {
-              localStorage.setItem('lector_authorized', 'true');
+              storage.setItem('lector_authorized', 'true');
               screen.style.opacity = '0';
               setTimeout(() => {
                   screen.style.display = 'none';

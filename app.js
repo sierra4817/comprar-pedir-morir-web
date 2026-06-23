@@ -1,3 +1,16 @@
+const safeStorage = {
+    getItem(key) {
+        try { return localStorage.getItem(key); } catch (e) { return this._fallback[key] || null; }
+    },
+    setItem(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) { this._fallback[key] = String(value); }
+    },
+    removeItem(key) {
+        try { localStorage.removeItem(key); } catch (e) { delete this._fallback[key]; }
+    },
+    _fallback: {}
+};
+
 const bookData = [
     {
         "title": "PRÓLOGO",
@@ -8595,19 +8608,19 @@ const btnResumeReading = document.getElementById('btn-resume-reading');
 // ==========================================================================
 function loadSavedProgress() {
     try {
-        const savedCompleted = localStorage.getItem('completed_chapters');
+        const savedCompleted = safeStorage.getItem('completed_chapters');
         completedChapters = savedCompleted ? JSON.parse(savedCompleted) : [];
         
-        const savedLastChapter = localStorage.getItem('last_active_chapter');
+        const savedLastChapter = safeStorage.getItem('last_active_chapter');
         lastActiveChapter = savedLastChapter ? parseInt(savedLastChapter) : 0;
         
-        const savedFontSize = localStorage.getItem('reader_font_size');
+        const savedFontSize = safeStorage.getItem('reader_font_size');
         fontSizeLevel = savedFontSize ? parseFloat(savedFontSize) : 1.35;
         
-        const savedFontFamily = localStorage.getItem('reader_font_family');
+        const savedFontFamily = safeStorage.getItem('reader_font_family');
         fontFamily = savedFontFamily ? savedFontFamily : 'serif';
     } catch (e) {
-        console.error("Error loading progress from localStorage:", e);
+        console.error("Error loading progress from safeStorage:", e);
         completedChapters = [];
         lastActiveChapter = 0;
         fontSizeLevel = 1.35;
@@ -8628,7 +8641,7 @@ function applySavedEbookStyles() {
 function markChapterCompleted(chapterIndex) {
     if (!completedChapters.includes(chapterIndex)) {
         completedChapters.push(chapterIndex);
-        localStorage.setItem('completed_chapters', JSON.stringify(completedChapters));
+        safeStorage.setItem('completed_chapters', JSON.stringify(completedChapters));
         renderDashboard();
     }
 }
@@ -8741,7 +8754,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // THEME & NAVIGATION
 // ==========================================================================
 function initTheme() {
-    const storedTheme = localStorage.getItem('tts_reader_theme') || 'dark';
+    const storedTheme = safeStorage.getItem('tts_reader_theme') || 'dark';
     setTheme(storedTheme);
 }
 
@@ -8759,13 +8772,13 @@ function setTheme(theme) {
         document.body.classList.add('dark-theme');
         indicator.textContent = '🌙';
     }
-    localStorage.setItem('tts_reader_theme', theme);
+    safeStorage.setItem('tts_reader_theme', theme);
 }
 
 function setupEventListeners() {
     // 3-way Theme Cycle (Dark -> Light -> Sepia -> Dark)
     themeToggle.addEventListener('click', () => {
-        const currentTheme = localStorage.getItem('tts_reader_theme') || 'dark';
+        const currentTheme = safeStorage.getItem('tts_reader_theme') || 'dark';
         let nextTheme = 'dark';
         if (currentTheme === 'dark') {
             nextTheme = 'light';
@@ -8784,13 +8797,13 @@ function setupEventListeners() {
     fontDecrease.addEventListener('click', () => {
         fontSizeLevel = Math.max(1.0, fontSizeLevel - 0.1);
         readerContainerEl.style.fontSize = fontSizeLevel + 'rem';
-        localStorage.setItem('reader_font_size', fontSizeLevel);
+        safeStorage.setItem('reader_font_size', fontSizeLevel);
     });
 
     fontIncrease.addEventListener('click', () => {
         fontSizeLevel = Math.min(2.2, fontSizeLevel + 0.1);
         readerContainerEl.style.fontSize = fontSizeLevel + 'rem';
-        localStorage.setItem('reader_font_size', fontSizeLevel);
+        safeStorage.setItem('reader_font_size', fontSizeLevel);
     });
 
     // Font family switching
@@ -8801,7 +8814,7 @@ function setupEventListeners() {
         } else {
             readerContainerEl.classList.remove('sans-serif-font');
         }
-        localStorage.setItem('reader_font_family', fontFamily);
+        safeStorage.setItem('reader_font_family', fontFamily);
     });
 
     // Dashboard Start / Resume buttons
@@ -8903,7 +8916,7 @@ function loadChapter(chapterIndex) {
     
     currentChapterIndex = chapterIndex;
     lastActiveChapter = chapterIndex;
-    localStorage.setItem('last_active_chapter', chapterIndex);
+    safeStorage.setItem('last_active_chapter', chapterIndex);
     
     currentSentenceIndex = -1;
     sentencesList = [];
